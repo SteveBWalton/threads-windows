@@ -1,0 +1,11 @@
+# Ignore these folders.
+Debug/
+Release/
+.vs/
+
+# Ignore these file types.
+*.suo
+*.user
+
+# Ignore these files.
+Parallel.vcxproj.filters
