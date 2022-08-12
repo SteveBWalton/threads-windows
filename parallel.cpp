@@ -81,15 +81,16 @@ int main()
     ThreadPool threadPool(4);
     for (int i = 0; i < NUM_LOOPS; i++)
     {
-        threadPool.doJob(std::bind(showNumber, i));
+        threadPool.addTask(std::bind(showNumber, i));
     }
+    threadPool.waitAllFinish();
     threadPool.waitAllFinish();
     std::cout << std::endl;
 
     // Lets go again with the thread pool.
     for (int i = 0; i < NUM_LOOPS; i++)
     {
-        threadPool.doJob(std::bind(showNumber, i));
+        threadPool.addTask(std::bind(showNumber, i));
     }
     threadPool.waitAllFinish();
     std::cout << std::endl;
