@@ -7,26 +7,29 @@
 #include <thread>
 #include <functional>
 #include <cmath>
+#include <mutex>
 
 // Application Headers.
 #include "thread_pool.h"
 
 
 
-// Write the number to the console and pause for a little while.
-void showNumber
-(
-    int number
-)
+// Mutex for the showNumber() function.
+std::mutex mutexShowNumber_;
+
+
+
+// Pause the thread for a short time period.
+void pause()
 {
-    // True to sleep afterward, false for actual calculations.
+    // True to sleep, false for actual calculations.
     const bool SLEEP = true;
 
     // Pause for a little while.
     if (SLEEP)
     {
         // Sleep for 1 second.
-        std::this_thread::sleep_for(std::chrono::microseconds(1000000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
     else
     {
@@ -39,6 +42,34 @@ void showNumber
             result = pow(result, 0.57);
         }
     }
+}
+
+
+
+// Write the number to the console and pause for a little while.
+void showNumber
+(
+    int number
+)
+{
+    // Wait / Work for a while.
+    pause();
+
+    // Wait for all the other showNumber() functions to finish.
+    std::unique_lock <std::mutex> lock(mutexShowNumber_);
+
+    // Write the number to console.
+    std::cout << number << " ";
+    std::cout.flush();
+
+    // Release the lock.
+    lock.unlock();
+
+    // Wait / Work for a while.
+    pause();
+
+    // Wait for all the other showNumber() functions to finish.
+    lock.lock();
 
     // Write the number to console.
     std::cout << number << " ";
