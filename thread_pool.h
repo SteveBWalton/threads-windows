@@ -14,6 +14,7 @@
 
 
 
+// Class to represent a collection of threads that execute tasks from a queue.
 class ThreadPool
 {
 public:
@@ -37,6 +38,9 @@ private:
     std::vector <std::thread> threads_;
 
     // The number of tasks that are running and in the queue.
+    // This is atomic for operations like numTasksPending_++, numTasksPending_-- and numTasksPending_+= 1.
+    // But not for numTasksPending_ = numTasksPending_ + 1.
+    // The atomic means that threads can write and read to the variable without mutex protection.
     std::atomic<int> numTasksPending_;
 
     // Mutex for the count tasks calculation.

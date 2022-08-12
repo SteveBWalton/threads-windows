@@ -42,7 +42,7 @@ ThreadPool::~ThreadPool()
 
         // Tell the threads to stop.
         isShutdown_ = true;
-        condAddTask_.notify_all();
+        condAddTask_.notify_all();        
     }
 
     // Wait for all threads to stop.
@@ -104,8 +104,13 @@ void ThreadPool::threadEntry
 
             if (tasks_.empty())
             {
+                // Sleep for 0.5 second, so we can we that the lock releases each thread in turn.  This is debugging only, not needed.
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
                 // No tasks to do, so we are shutting down.
                 std::cout << "Thread " << i << " terminates" << std::endl;
+                
+                // Close the thread.
                 return;
             }
 
@@ -123,7 +128,7 @@ void ThreadPool::threadEntry
         if (numTasksPending_ == 0)
         {
             // All jobs are finished.
-            condNumTasksZero_.notify_one();
+            condNumTasksZero_.notify_all();
         }
     }
 }

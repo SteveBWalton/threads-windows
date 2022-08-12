@@ -19,12 +19,8 @@ void showNumber
     int number
 )
 {
-    // Write the number to console.
-    std::cout << number << " ";
-    std::cout.flush();
-
     // True to sleep afterward, false for actual calculations.
-    const bool SLEEP = false;
+    const bool SLEEP = true;
 
     // Pause for a little while.
     if (SLEEP)
@@ -43,6 +39,10 @@ void showNumber
             result = pow(result, 0.57);
         }
     }
+
+    // Write the number to console.
+    std::cout << number << " ";
+    std::cout.flush();
 }
 
 
