@@ -119,6 +119,16 @@ int main()
     std::cout << std::endl;
 
     // Lets go again with the thread pool.
+    threadPool.stopMultithreading();
+    for (int i = 0; i < NUM_LOOPS; i++)
+    {
+        threadPool.addTask(std::bind(showNumber, i));
+    }
+    threadPool.waitAllFinish();
+    threadPool.startMultithreading();
+    std::cout << std::endl;
+
+    // Lets go again with the thread pool.
     for (int i = 0; i < NUM_LOOPS; i++)
     {
         threadPool.addTask(std::bind(showNumber, i));

@@ -28,6 +28,7 @@ ThreadPool::ThreadPool
         threads_.emplace_back(std::bind(&ThreadPool::threadEntry, this, i));
     }
     numTasksPending_ = 0;
+    isMultithreading_ = true;
 }
 
 
@@ -64,14 +65,22 @@ void ThreadPool::addTask
     // Wait for all add task functions to finish.
     std::unique_lock <std::mutex> lock(mutexAddTask_);
 
-    // Another task before we are finished.
-    numTasksPending_++;
+    if (isMultithreading_)
+    {
+        // Another task before we are finished.
+        numTasksPending_++;
 
-    // Place the task on the quene.
-    tasks_.emplace(std::move(newTask));
+        // Place the task on the quene.
+        tasks_.emplace(std::move(newTask));
 
-    // Unblock one thread.
-    condAddTask_.notify_one();
+        // Unblock one thread.
+        condAddTask_.notify_one();
+    }
+    else
+    {
+        // Simply do the task on this thread.
+        newTask();
+    }
 }
 
 
@@ -146,4 +155,26 @@ void ThreadPool::waitAllFinish()
         // Wait for nofication that numJobsPending_ has reached zero.
         condNumTasksZero_.wait(lock);
     }
+}
+
+
+
+void ThreadPool::stopMultithreading()
+{
+    // Wait for all add task functions to finish.
+    std::unique_lock <std::mutex> lock(mutexAddTask_);
+
+    // Disable the multithreading mode.
+    isMultithreading_ = false;
+}
+
+
+
+void ThreadPool::startMultithreading()
+{
+    // Wait for all add task functions to finish.
+    std::unique_lock <std::mutex> lock(mutexAddTask_);
+
+    // Enable the multithreading mode.
+    isMultithreading_ = true;
 }

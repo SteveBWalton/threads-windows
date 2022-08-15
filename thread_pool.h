@@ -49,6 +49,9 @@ private:
     // Condition to wait for numTasksPending_ to reach zero.
     std::condition_variable condNumTasksZero_;
 
+    // False to stop multithreading.  Can be used for debuging.
+    bool isMultithreading_;
+
 private:
     // The threads execute this function.
     void threadEntry(int);
@@ -58,4 +61,8 @@ public:
     void addTask(std::function <void(void)>);
     // Wait until the queue is empty and the running tasks complete.
     void waitAllFinish();
+    // Stop using threads.  Might be usefult for debugging.
+    void stopMultithreading();
+    // Start using threads.  The default mode.
+    void startMultithreading();
 };
